@@ -2,7 +2,7 @@
 import { test } from '@playwright/test';
 import { EmailUtils } from '../utils/EmailUtils'
 import * as signUpPage from '../pages/SignUp'
-import * as loginPage from '../pages/Login'
+import { Login } from '../pages/Login';
 
 
 import { join, resolve } from 'path'
@@ -12,6 +12,7 @@ const testSignUp = process.env.SIGN_UP_FLOW
 
 test('Sign up', async ({page})=>{
     test.skip(testSignUp !== 'false', 'Skipping sign up test')
+    const loginPage = new Login(page);
 
     const emailUtils = new EmailUtils()
     const inbox = await emailUtils.createInbox();
@@ -27,9 +28,9 @@ test('Sign up', async ({page})=>{
 
     await signUpPage.addConfirmationCode(page, code)
 
-    await loginPage.login(page, inbox.emailAddress, signUpPage.signUpData.password)
+    await loginPage.loginFlow(inbox.emailAddress, signUpPage.signUpData.password)
 
-    await loginPage.verifySuccessfulLogin(page)
+    await loginPage.verifySuccessfulLogin()
 
     // persist login data:
     const loginData = {
