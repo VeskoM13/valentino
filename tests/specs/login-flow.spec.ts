@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import * as loginPage from '../pages/Login'
+import { Base } from '../pages/Base';
+import { Login } from '../pages/Login';
 import path from 'path'
 import fs from 'fs'
 
@@ -30,8 +31,10 @@ const validationTestData = [
 test.describe('Login Flow', () => {
     test.describe.configure({ mode: 'serial' });
     test.use({ storageState: { cookies: [], origins: [] } });
+    let loginPage: Login;
 
     test.beforeEach(async ({ page }) => {
+        loginPage = new Login(page);
         await page.goto('/login');
     });
 
@@ -43,20 +46,20 @@ test.describe('Login Flow', () => {
     });
 
     test('Wrong password - shows error message', async ({ page }) => {
-        await loginPage.login(page, loginData.email, validationTestData[1].password!);
+        await loginPage.loginFlow(loginData.email, validationTestData[1].password!);
 
         await expect(page.getByText(validationTestData[1].errorPasswordMessage!, { exact: true })).toBeVisible();
     });
 
      test('Invalid email - shows error message', async ({ page }) => {
-        await loginPage.login(page, validationTestData[2].email!, loginData.pass);
+        await loginPage.loginFlow(validationTestData[2].email!, loginData.pass);
 
         await expect(page.getByText(validationTestData[2].errorEmailMessage!, { exact: true })).toBeVisible();
     });
 
     test('Happy flow - successful login', async ({ page }) => {
-        await loginPage.login(page, loginData.email, loginData.pass);
-        await loginPage.verifySuccessfulLogin(page);
+        await loginPage.loginFlow(loginData.email, loginData.pass);
+        await loginPage.verifySuccessfulLogin();
     });
 
 });
