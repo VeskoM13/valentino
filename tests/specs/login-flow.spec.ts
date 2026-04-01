@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import * as loginPage from '../pages/Login'
+import { LoginPage } from '../pages/Login';
 import path from 'path'
 import fs from 'fs'
 
@@ -31,32 +31,36 @@ test.describe('Login Flow', () => {
     test.describe.configure({ mode: 'serial' });
     test.use({ storageState: { cookies: [], origins: [] } });
 
+    let loginFlow: LoginPage;
+
     test.beforeEach(async ({ page }) => {
+        loginFlow = new LoginPage(page);
         await page.goto('/login');
     });
 
     test('Validation errors - empty email and password fields', async ({ page }) => {
-        await page.locator('[data-test-id="login-submit-button"]').click();
+        
+        await loginFlow.clickLogin();
 
         await expect(page.getByText(validationTestData[0].errorEmailMessage!, { exact: true })).toBeVisible();
         await expect(page.getByText(validationTestData[0].errorPasswordMessage!, { exact: true })).toBeVisible();
     });
 
     test('Wrong password - shows error message', async ({ page }) => {
-        await loginPage.login(page, loginData.email, validationTestData[1].password!);
+        await loginFlow.login(loginData.email, validationTestData[1].password!);
 
         await expect(page.getByText(validationTestData[1].errorPasswordMessage!, { exact: true })).toBeVisible();
     });
 
      test('Invalid email - shows error message', async ({ page }) => {
-        await loginPage.login(page, validationTestData[2].email!, loginData.pass);
+        await loginFlow.login(validationTestData[2].email!, loginData.pass);
 
         await expect(page.getByText(validationTestData[2].errorEmailMessage!, { exact: true })).toBeVisible();
     });
 
     test('Happy flow - successful login', async ({ page }) => {
-        await loginPage.login(page, loginData.email, loginData.pass);
-        await loginPage.verifySuccessfulLogin(page);
+        await loginFlow.login(loginData.email, loginData.pass);
+        await loginFlow.verifySuccessfulLogin(page);
     });
 
 });
