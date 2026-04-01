@@ -5,7 +5,10 @@ import { Checkout } from '../pages/Checkout';
 import { ContactPage } from '../pages/Contact';
 import { Base } from '../pages/Base';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test('Item is added to the shopping cart', async ({ page }) => {
+    
     await page.goto('/products');
 
     const products = new Product(page)
@@ -25,8 +28,8 @@ test('Item is added to the shopping cart', async ({ page }) => {
 
     const checkout = new Checkout(page)
     await checkout.addContactInfo(checkout.testValues)
+     await checkout.addShippingAddress(checkout.testValues)
     await checkout.addPaymentInfo(checkout.testValues)
-    await checkout.addShippingAddress(checkout.testValues)
     await checkout.placeOrder()
 
     // get orderId:
