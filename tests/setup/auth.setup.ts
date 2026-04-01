@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { test } from '@playwright/test';
-import * as loginPage from '../pages/Login'
+import { LoginPage } from '../pages/Login';
 
 const authSessionFile = path.resolve(__dirname, '../../playwright/.auth/user.json');
 
@@ -13,9 +13,8 @@ const loginData = JSON.parse(fs.readFileSync(loginDataFile, 'utf-8')) as {
 }
 test('authenticate', async ({ page }) => { 
     await page.goto('/login')
-
+    const loginPage = new LoginPage(page);
     await loginPage.login(
-        page,
         loginData.email,
         loginData.pass
     )
