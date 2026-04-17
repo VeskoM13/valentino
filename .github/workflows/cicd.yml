@@ -1,49 +1,27 @@
 name: Playwright Tests
-
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-  workflow_dispatch:
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
+    branches: [ main, master ]
 jobs:
   test:
-    name: Playwright E2E Tests
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.58.2-jammy
-      options: --user 1001
-    env:
-      MAIL_SLURP_API_KEY: ${{ secrets.MAIL_SLURP_API_KEY }}
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Write login credentials
-        run: |
-          mkdir -p playwright/.auth
-          echo '{"email":"${{ secrets.LOGIN_EMAIL }}","pass":"${{ secrets.LOGIN_PASS }}"}' > playwright/.auth/loginData.json
-
-      - name: Run Playwright tests
-        run: npx playwright test
-
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: playwright-report
-          path: reports-e2e/
-          retention-days: 30
+    - uses: actions/checkout@v5
+    - uses: actions/setup-node@v6
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      run: npx playwright test
+    - uses: actions/upload-artifact@v5
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
