@@ -4,7 +4,7 @@ export class Product {
     readonly page: Page;
     private readonly productWrapper = '.p-6';
     private readonly productPrice = '.font-bold';
-    private readonly productHeadingRole = 'headingrr';
+    private readonly productHeadingRole = 'heading';
     private readonly addToCartButtonName = 'Add to Cart';
 
     constructor(page: Page) {
