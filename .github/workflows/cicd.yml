@@ -20,6 +20,7 @@ jobs:
       options: --user 1001
     env:
       MAIL_SLURP_API_KEY: ${{ secrets.MAIL_SLURP_API_KEY }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - uses: actions/checkout@v5
@@ -40,7 +41,7 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
