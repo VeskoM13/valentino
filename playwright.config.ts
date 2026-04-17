@@ -28,11 +28,14 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: [
+  outputDir: process.env.GITHUB_WORKSPACE
+    ? `${process.env.GITHUB_WORKSPACE}/test-results`
+    : './test-results',
+  reporter: [
     ['list'],
     ['github'],
-    ['junit', { outputFile: 'reports-e2e/junit.xml' }],
-    ['html', { outputFolder: 'reports-e2e/html', open: 'never' }],
+    ['junit', { outputFile: process.env.GITHUB_WORKSPACE ? `${process.env.GITHUB_WORKSPACE}/results.xml` : './results.xml' }],
+    ['html', { outputFolder: process.env.GITHUB_WORKSPACE ? `${process.env.GITHUB_WORKSPACE}/playwright-report` : './playwright-report', open: 'never' }],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
