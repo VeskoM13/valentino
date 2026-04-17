@@ -12,5 +12,4 @@ export class Base {
     async openCart() {
         await this.page.locator(this.cartButton).click();
     }
-
 }
