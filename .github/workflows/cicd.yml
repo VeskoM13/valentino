@@ -19,6 +19,8 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.58.2-jammy
       options: --user 1001
     env:
+      LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
+      LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
       MAIL_SLURP_API_KEY: ${{ secrets.MAIL_SLURP_API_KEY }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 

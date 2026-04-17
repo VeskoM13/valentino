@@ -3,11 +3,35 @@ import { Login } from '../pages/Login';
 import path from 'path';
 import fs from 'fs';
 
+// --- SAFE JSON READING LOGIC START ---
+
 const loginDataFile = path.resolve(__dirname, '../../playwright/.auth/loginData.json');
-const loginData = JSON.parse(fs.readFileSync(loginDataFile, 'utf-8')) as {
-    email: string,
-    pass: string
-};
+
+/**
+ * We check if the file exists. 
+ * On CI (GitHub Actions), this file might be missing because it's ignored by git.
+ * If it's missing, we pull values from process.env (GitHub Secrets).
+ */
+let loginData = { email: '', pass: '' };
+
+if (fs.existsSync(loginDataFile)) {
+    // If file exists (local development), read from it
+    loginData = JSON.parse(fs.readFileSync(loginDataFile, 'utf-8'));
+} else {
+    // If file is missing (CI/GitHub Actions), use Environment Variables
+    loginData = {
+        email: process.env.LOGIN_EMAIL || '',
+        pass: process.env.LOGIN_PASSWORD || ''
+    };
+}
+
+// Ensure the directory exists so Playwright doesn't crash if it tries to write there later
+const authDir = path.dirname(loginDataFile);
+if (!fs.existsSync(authDir)) {
+    fs.mkdirSync(authDir, { recursive: true });
+}
+
+// --- SAFE JSON READING LOGIC END ---
 
 const testData = {
     emptyFields: {
@@ -33,6 +57,7 @@ const test = base.extend<{ loginPage: Login }>({
 });
 
 test.describe('Login Flow', () => {
+    // We clear storage state to ensure we are testing a fresh login every time
     test.use({ storageState: { cookies: [], origins: [] } });
 
     test('Validation errors - empty email and password fields', async ({ page, loginPage }) => {
