@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: mcr.microsoft.com/playwright:v1.51.0-jammy # Proveri verziju, 1.58 još ne postoji u 2024/25
+      image: mcr.microsoft.com/playwright:v1.58.2-jammy
       options: --user 1001
     env:
       LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
